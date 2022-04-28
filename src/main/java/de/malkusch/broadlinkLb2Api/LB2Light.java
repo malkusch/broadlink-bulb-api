@@ -2,7 +2,6 @@ package de.malkusch.broadlinkLb2Api;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mob41.blapi.SP1Device;
 import com.github.mob41.blapi.mac.Mac;
 import com.github.mob41.blapi.mac.MacFormatException;
@@ -14,14 +13,15 @@ import de.malkusch.broadlinkLb2Api.mob41.lb2.State.Power;
 
 public final class LB2Light implements AutoCloseable {
 
-    private final Lb2StateCmdPayloadFactory commandFactory = new Lb2StateCmdPayloadFactory(new ObjectMapper());
+    private final Lb2StateCmdPayloadFactory commandFactory;
     private final SP1Device device;
     private final String name;
 
-    LB2Light(String host, String mac) throws IOException {
+    LB2Light(String host, String mac, Lb2StateCmdPayloadFactory commandFactory) throws IOException {
         try {
             this.name = String.format("%s (%s)", host, mac);
             device = new SP1Device(host, reverseMac(mac));
+            this.commandFactory = commandFactory;
 
         } catch (MacFormatException e) {
             throw new IllegalArgumentException(String.format("Mac '{}' is invalid", mac), e);

@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mob41.blapi.mac.Mac;
 import com.github.mob41.blapi.pkt.dis.DiscoveryPacket;
 
+import de.malkusch.broadlinkLb2Api.mob41.lb2.Lb2StateCmdPayloadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +31,7 @@ public class LB2LightFactory {
 
     private static byte DEVICE_TYPE = -56;
     private final Duration timeout;
+    private final Lb2StateCmdPayloadFactory commandFactory = new Lb2StateCmdPayloadFactory(new ObjectMapper());
 
     public LB2LightFactory() {
         this(Duration.ofSeconds(5));
@@ -57,7 +60,8 @@ public class LB2LightFactory {
         try (var connection = new Connection(sourceIpAddr, InetAddress.getByName("255.255.255.255"), timeout, true)) {
 
             for (var next = connection.readNext(); next.isPresent(); next = connection.readNext()) {
-                var light = next.get();
+                var response = next.get();
+                var light = build(response);
                 log.info("Discovered {}", light);
                 lights.add(light);
             }
@@ -71,10 +75,14 @@ public class LB2LightFactory {
 
     public LB2Light build(InetAddress target) throws IOException {
         try (var connection = Connection.connection(target, timeout, false)) {
-            var light = connection.readNext()
+            var response = connection.readNext()
                     .orElseThrow(() -> new IOException(String.format("Could not discover device {}", target)));
-            return light;
+            return build(response);
         }
+    }
+
+    private LB2Light build(Connection.Response response) throws IOException {
+        return new LB2Light(response.host, response.mac, commandFactory);
     }
 
     @Slf4j
@@ -133,7 +141,11 @@ public class LB2LightFactory {
             }
         }
 
-        public Optional<LB2Light> readNext() throws IOException {
+        private static record Response(String host, String mac) {
+
+        }
+
+        public Optional<Response> readNext() throws IOException {
             var next = readNextPacket();
             if (next.isEmpty()) {
                 return Optional.empty();
@@ -153,7 +165,7 @@ public class LB2LightFactory {
                 return Optional.empty();
             }
 
-            return Optional.of(new LB2Light(host, mac.toString()));
+            return Optional.of(new Response(host, mac.toString()));
         }
 
         @Override
