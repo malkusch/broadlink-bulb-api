@@ -29,6 +29,10 @@ public class LB2LightFactory {
 
     private static byte DEVICE_TYPE = -56;
     private final Duration timeout;
+    
+    public LB2LightFactory() {
+        this(Duration.ofSeconds(5));
+    }
 
     public Collection<LB2Light> discover() throws IOException {
         var addresses = NetworkInterface.networkInterfaces().flatMap(it -> it.getInterfaceAddresses().stream())
