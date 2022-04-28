@@ -10,7 +10,7 @@
 	</properties>
 	<scm>
 		<connection>scm:git:git://github.com/malkusch/broadlink-lb2-api.git</connection>
-		<developerConnection>scm:git:git://github.com/malkusch/broadlink-lb2-api.git</developerConnection>
+		<developerConnection>scm:git:ssh://github.com/malkusch/broadlink-lb2-api.git</developerConnection>
 		<url>https://github.com/malkusch/broadlink-lb2-api</url>
 	  <tag>broadlink-lb2-api-0.0.4</tag>
   </scm>
