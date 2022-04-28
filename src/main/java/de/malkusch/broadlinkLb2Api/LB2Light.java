@@ -12,14 +12,16 @@ import de.malkusch.broadlinkLb2Api.mob41.lb2.State;
 import de.malkusch.broadlinkLb2Api.mob41.lb2.State.ColorMode;
 import de.malkusch.broadlinkLb2Api.mob41.lb2.State.Power;
 
-public final class LB2Light {
+public final class LB2Light implements AutoCloseable {
 
     private final Lb2StateCmdPayloadFactory commandFactory = new Lb2StateCmdPayloadFactory(new ObjectMapper());
     private final SP1Device device;
+    private final String mac;
 
-    public LB2Light(String host, String mac) throws IOException {
+    LB2Light(String host, String mac) throws IOException {
         try {
-            device = new SP1Device("192.168.188.105", reverseMac(mac));
+            this.mac = mac;
+            device = new SP1Device(host, reverseMac(mac));
 
         } catch (MacFormatException e) {
             throw new IllegalArgumentException(e);
@@ -27,6 +29,11 @@ public final class LB2Light {
         if (!device.auth()) {
             throw new IllegalArgumentException("Failed to authenticate");
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", device.getHost(), mac);
     }
 
     public void turnOff() throws IOException {
@@ -71,5 +78,10 @@ public final class LB2Light {
         reversed[5] = bytes[0];
 
         return new Mac(reversed);
+    }
+
+    @Override
+    public void close() {
+        device.close();
     }
 }
