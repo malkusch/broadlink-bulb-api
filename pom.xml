@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.malkusch</groupId>
 	<artifactId>broadlink-lb2-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.4</version>
 	<properties>
 		<maven.compiler.source>16</maven.compiler.source>
 		<maven.compiler.target>16</maven.compiler.target>
@@ -12,7 +12,8 @@
 		<connection>scm:git:git://github.com/malkusch/broadlink-lb2-api.git</connection>
 		<developerConnection>scm:git:git://github.com/malkusch/broadlink-lb2-api.git</developerConnection>
 		<url>https://github.com/malkusch/broadlink-lb2-api</url>
-	</scm>
+	  <tag>broadlink-lb2-api-0.0.4</tag>
+  </scm>
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
