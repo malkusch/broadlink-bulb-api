@@ -1,5 +1,7 @@
 package de.malkusch.broadlinkLb2Api.mob41.lb2;
 
+import static de.malkusch.broadlinkLb2Api.mob41.lb2.State.EMPTY;
+
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,11 +21,19 @@ public final class Lb2StateCmdPayloadFactory {
     private static final int FLAG_WRITE = 2;
     private static final int FLAG_READ = 1;
 
-    public Lb2StateCmdPayload build(State state) {
+    public Lb2StateCmdPayload writeCommand(State state) {
+        return build(state, FLAG_WRITE);
+    }
+
+    public Lb2StateCmdPayload readCommand() {
+        return build(EMPTY, FLAG_READ);
+    }
+
+    private Lb2StateCmdPayload build(State state, int flag) {
         try {
             var data = json(state);
             var p_len = 12 + data.length;
-            var packet = packer.pack(p_len, FLAG_WRITE, data.length);
+            var packet = packer.pack(p_len, flag, data.length);
             packet = extend(packet, data);
             var checksum = Checksum.checksum(packet, 2);
             packet[6] = checksum[0];

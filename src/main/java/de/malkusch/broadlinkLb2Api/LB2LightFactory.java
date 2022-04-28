@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mob41.blapi.mac.Mac;
 import com.github.mob41.blapi.pkt.dis.DiscoveryPacket;
 
+import de.malkusch.broadlinkLb2Api.mob41.lb2.LB2Device;
 import de.malkusch.broadlinkLb2Api.mob41.lb2.Lb2StateCmdPayloadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Discovers or builds LB2Light devices.
  *
- * E.g. discover all devices:
- * {@code
+ * E.g. discover all devices: {@code
  * var factory = new LB2LightFactory();
  * var lights = factory.discover();
- * for (var light : lights) {
- *   light.turnOn();
- * }
- * }
+ * for (var light : lights) { light.turnOn(); } }
  * 
  * @author malkusch
  *
@@ -115,7 +112,7 @@ public final class LB2LightFactory {
      *            hostname
      */
     public LB2Light build(String target) throws IOException {
-        return build(target);
+        return build(InetAddress.getByName(target));
     }
 
     /**
@@ -133,7 +130,8 @@ public final class LB2LightFactory {
     }
 
     private LB2Light build(Connection.Response response) throws IOException {
-        return new LB2Light(response.host, response.mac, commandFactory);
+        var device = new LB2Device(response.host, response.mac, commandFactory);
+        return new LB2Light(device);
     }
 
     @Slf4j
