@@ -9,7 +9,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<scm>
-		<connection>scm:git:git://github.com/malkusch/broadlink-lb2-api.git</connection>
+		<connection>scm:git:ssh://github.com/malkusch/broadlink-lb2-api.git</connection>
 		<developerConnection>scm:git:ssh://github.com/malkusch/broadlink-lb2-api.git</developerConnection>
 		<url>https://github.com/malkusch/broadlink-lb2-api</url>
 	  <tag>broadlink-lb2-api-0.0.4</tag>
