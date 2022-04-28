@@ -29,7 +29,7 @@ public class LB2LightFactory {
 
     private static byte DEVICE_TYPE = -56;
     private final Duration timeout;
-    
+
     public LB2LightFactory() {
         this(Duration.ofSeconds(5));
     }
@@ -48,6 +48,10 @@ public class LB2LightFactory {
         return lights;
     }
 
+    public Collection<LB2Light> discover(String sourceIpAddr) throws IOException {
+        return discover(InetAddress.getByName(sourceIpAddr));
+    }
+
     public Collection<LB2Light> discover(InetAddress sourceIpAddr) throws IOException {
         var lights = new ArrayList<LB2Light>();
         try (var connection = new Connection(sourceIpAddr, InetAddress.getByName("255.255.255.255"), timeout, true)) {
@@ -59,6 +63,10 @@ public class LB2LightFactory {
             }
         }
         return lights;
+    }
+
+    public LB2Light build(String target) throws IOException {
+        return build(target);
     }
 
     public LB2Light build(InetAddress target) throws IOException {
@@ -73,8 +81,7 @@ public class LB2LightFactory {
     private static final class Connection implements AutoCloseable {
         private final InetAddress sourceIpAddr;
         private final int sourcePort = 0;
-        private final DiscoveryPacket dpkt;
-        private final DatagramSocket sock;
+        private final DatagramSocket socket;
 
         public static Connection connection(InetAddress target, Duration timeout, boolean broadcast)
                 throws IOException {
@@ -97,7 +104,7 @@ public class LB2LightFactory {
 
             sourceIpAddr = source;
 
-            this.sock = sock;
+            this.socket = sock;
             sock.setSoTimeout((int) timeout.toMillis());
             if (broadcast) {
                 sock.setBroadcast(true);
@@ -105,20 +112,20 @@ public class LB2LightFactory {
             }
             log.debug("Discover from {} at {}", sourceIpAddr, target);
 
-            dpkt = new DiscoveryPacket(sourceIpAddr, sourcePort);
+            DiscoveryPacket dpkt = new DiscoveryPacket(sourceIpAddr, sourcePort);
             byte[] sendBytes = dpkt.getData();
             DatagramPacket sendpack = new DatagramPacket(sendBytes, sendBytes.length, target, DISCOVERY_DEST_PORT);
 
             sock.send(sendpack);
         }
 
-        private final byte[] receBytes = new byte[DISCOVERY_RECEIVE_BUFFER_SIZE];
+        private final byte[] readBuffer = new byte[DISCOVERY_RECEIVE_BUFFER_SIZE];
 
         private Optional<DatagramPacket> readNextPacket() throws IOException {
-            DatagramPacket recePacket = new DatagramPacket(receBytes, 0, receBytes.length);
+            DatagramPacket packet = new DatagramPacket(readBuffer, 0, readBuffer.length);
             try {
-                sock.receive(recePacket);
-                return Optional.of(recePacket);
+                socket.receive(packet);
+                return Optional.of(packet);
 
             } catch (SocketTimeoutException e) {
                 log.debug("Stop discovery at {}", sourceIpAddr);
@@ -126,7 +133,7 @@ public class LB2LightFactory {
             }
         }
 
-        private Optional<LB2Light> readNext() throws IOException {
+        public Optional<LB2Light> readNext() throws IOException {
             var next = readNextPacket();
             if (next.isEmpty()) {
                 return Optional.empty();
@@ -134,8 +141,8 @@ public class LB2LightFactory {
             var recePacket = next.get();
 
             String host = recePacket.getAddress().getHostAddress();
-            Mac mac = new Mac(reverseBytes(subbytes(receBytes, 0x3a, 0x40)));
-            short deviceType = (short) (receBytes[0x34] | receBytes[0x35] << 8);
+            Mac mac = new Mac(reverseBytes(subbytes(readBuffer, 0x3a, 0x40)));
+            short deviceType = (short) (readBuffer[0x34] | readBuffer[0x35] << 8);
 
             log.debug("Info: host=" + host + " mac=" + mac.getMacString() + " deviceType=0x"
                     + Integer.toHexString(deviceType));
@@ -151,7 +158,7 @@ public class LB2LightFactory {
 
         @Override
         public void close() {
-            sock.close();
+            socket.close();
         }
     }
 }

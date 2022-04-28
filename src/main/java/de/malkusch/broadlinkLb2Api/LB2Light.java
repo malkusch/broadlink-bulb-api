@@ -16,15 +16,15 @@ public final class LB2Light implements AutoCloseable {
 
     private final Lb2StateCmdPayloadFactory commandFactory = new Lb2StateCmdPayloadFactory(new ObjectMapper());
     private final SP1Device device;
-    private final String mac;
+    private final String name;
 
     LB2Light(String host, String mac) throws IOException {
         try {
-            this.mac = mac;
+            this.name = String.format("%s (%s)", host, mac);
             device = new SP1Device(host, reverseMac(mac));
 
         } catch (MacFormatException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(String.format("Mac '{}' is invalid", mac), e);
         }
         if (!device.auth()) {
             throw new IllegalArgumentException("Failed to authenticate");
@@ -33,7 +33,7 @@ public final class LB2Light implements AutoCloseable {
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", device.getHost(), mac);
+        return name;
     }
 
     public void turnOff() throws IOException {
