@@ -25,18 +25,41 @@ import de.malkusch.broadlinkLb2Api.mob41.lb2.Lb2StateCmdPayloadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Discovers or builds LB2Light devices.
+ *
+ * E.g. discover all devices:
+ * {@code
+ * var factory = new LB2LightFactory();
+ * var lights = factory.discover();
+ * for (var light : lights) {
+ *   light.turnOn();
+ * }
+ * }
+ * 
+ * @author malkusch
+ *
+ */
 @RequiredArgsConstructor
 @Slf4j
-public class LB2LightFactory {
+public final class LB2LightFactory {
 
-    private static byte DEVICE_TYPE = -56;
+    private static final byte DEVICE_TYPE = -56;
     private final Duration timeout;
     private final Lb2StateCmdPayloadFactory commandFactory = new Lb2StateCmdPayloadFactory(new ObjectMapper());
 
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
+
     public LB2LightFactory() {
-        this(Duration.ofSeconds(5));
+        this(DEFAULT_TIMEOUT);
     }
 
+    /**
+     * Discovers all devices in the LAN.
+     * 
+     * @return
+     * @throws IOException
+     */
     public Collection<LB2Light> discover() throws IOException {
         var addresses = NetworkInterface.networkInterfaces().flatMap(it -> it.getInterfaceAddresses().stream())
                 .map(it -> it.getAddress()) //
@@ -51,13 +74,29 @@ public class LB2LightFactory {
         return lights;
     }
 
-    public Collection<LB2Light> discover(String sourceIpAddr) throws IOException {
-        return discover(InetAddress.getByName(sourceIpAddr));
+    /**
+     * Discovers all devices in the LAN.
+     * 
+     * This discovery is limited to one network device.
+     * 
+     * @param source
+     *            The source Ip address of a network interface
+     */
+    public Collection<LB2Light> discover(String source) throws IOException {
+        return discover(InetAddress.getByName(source));
     }
 
-    public Collection<LB2Light> discover(InetAddress sourceIpAddr) throws IOException {
+    /**
+     * Discovers all devices in the LAN.
+     * 
+     * This discovery is limited to one network device.
+     * 
+     * @param source
+     *            The source Ip address of a network interface
+     */
+    public Collection<LB2Light> discover(InetAddress source) throws IOException {
         var lights = new ArrayList<LB2Light>();
-        try (var connection = new Connection(sourceIpAddr, InetAddress.getByName("255.255.255.255"), timeout, true)) {
+        try (var connection = new Connection(source, InetAddress.getByName("255.255.255.255"), timeout, true)) {
 
             for (var next = connection.readNext(); next.isPresent(); next = connection.readNext()) {
                 var response = next.get();
@@ -69,10 +108,22 @@ public class LB2LightFactory {
         return lights;
     }
 
+    /**
+     * Connect to a known device
+     * 
+     * @param target
+     *            hostname
+     */
     public LB2Light build(String target) throws IOException {
         return build(target);
     }
 
+    /**
+     * Connect to a known device
+     * 
+     * @param target
+     *            The device's ip address
+     */
     public LB2Light build(InetAddress target) throws IOException {
         try (var connection = Connection.connection(target, timeout, false)) {
             var response = connection.readNext()

@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
-public class Lb2StateCmdPayloadFactory {
+public final class Lb2StateCmdPayloadFactory {
 
     private final ObjectMapper mapper;
     private final Packer packer = new Packer();
