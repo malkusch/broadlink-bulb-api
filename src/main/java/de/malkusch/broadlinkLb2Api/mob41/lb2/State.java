@@ -1,9 +1,12 @@
-package com.github.mob41.blapi.lb2;
+package de.malkusch.broadlinkLb2Api.mob41.lb2;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.github.mob41.blapi.lb2.State.ColorMode;
-import com.github.mob41.blapi.lb2.State.Power;
 
+import de.malkusch.broadlinkLb2Api.mob41.lb2.State.ColorMode;
+import de.malkusch.broadlinkLb2Api.mob41.lb2.State.Power;
 import lombok.RequiredArgsConstructor;
 
 /*public record State(int pwr, int red, int blue, int green, int brightness, int colortemp, int hue, int saturation,
@@ -12,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 }
 */
 
-public record State(Power pwr, int red, int blue, int green, ColorMode bulb_colormode) {
+@JsonInclude(NON_NULL)
+public record State(Power pwr, Integer red, Integer blue, Integer green, Integer brightness, ColorMode bulb_colormode) {
 
     @RequiredArgsConstructor
     public static enum Power {

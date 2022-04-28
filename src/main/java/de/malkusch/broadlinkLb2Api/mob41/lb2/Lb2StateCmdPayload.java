@@ -1,4 +1,4 @@
-package com.github.mob41.blapi.lb2;
+package de.malkusch.broadlinkLb2Api.mob41.lb2;
 
 import com.github.mob41.blapi.pkt.CmdPayload;
 import com.github.mob41.blapi.pkt.Payload;

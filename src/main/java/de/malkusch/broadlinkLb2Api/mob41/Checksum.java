@@ -1,4 +1,4 @@
-package com.github.mob41.blapi;
+package de.malkusch.broadlinkLb2Api.mob41;
 
 public final class Checksum {
 

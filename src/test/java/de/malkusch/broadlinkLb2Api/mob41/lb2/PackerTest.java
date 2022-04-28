@@ -1,10 +1,12 @@
-package com.github.mob41.blapi.lb2;
+package de.malkusch.broadlinkLb2Api.mob41.lb2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import de.malkusch.broadlinkLb2Api.mob41.lb2.Packer;
 
 public class PackerTest {
 
