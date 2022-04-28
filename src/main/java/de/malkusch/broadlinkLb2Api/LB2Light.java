@@ -15,7 +15,8 @@ public final class LB2Light implements AutoCloseable {
 
     private final Lb2StateCmdPayloadFactory commandFactory;
     private final SP1Device device;
-    private final String name;
+    private final String host;
+    private final String mac;
 
     /**
      * Use LB2LightFactory to create instances of LB2Light.
@@ -24,7 +25,8 @@ public final class LB2Light implements AutoCloseable {
      */
     LB2Light(String host, String mac, Lb2StateCmdPayloadFactory commandFactory) throws IOException {
         try {
-            this.name = String.format("%s (%s)", host, mac);
+            this.host = host;
+            this.mac = mac;
             device = new SP1Device(host, reverseMac(mac));
             this.commandFactory = commandFactory;
 
@@ -36,9 +38,17 @@ public final class LB2Light implements AutoCloseable {
         }
     }
 
+    public String mac() {
+        return mac;
+    }
+
+    public String host() {
+        return host;
+    }
+
     @Override
     public String toString() {
-        return name;
+        return String.format("%s (%s)", host, mac);
     }
 
     public void turnOff() throws IOException {
