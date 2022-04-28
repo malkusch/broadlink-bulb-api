@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 */
 
 @JsonInclude(NON_NULL)
-public record State(Power pwr, Integer red, Integer blue, Integer green, Integer brightness, ColorMode bulb_colormode) {
+public record State(Power pwr, Integer red, Integer green, Integer blue, Integer brightness, ColorMode bulb_colormode) {
 
     @RequiredArgsConstructor
     public static enum Power {

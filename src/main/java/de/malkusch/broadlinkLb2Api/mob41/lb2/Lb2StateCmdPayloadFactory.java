@@ -21,8 +21,7 @@ public class Lb2StateCmdPayloadFactory {
 
     public Lb2StateCmdPayload build(State state) {
         try {
-            var data = mapper.writeValueAsBytes(state);
-            log.debug("Serialized state to: {}", new String(data));
+            var data = json(state);
             var p_len = 12 + data.length;
             var packet = packer.pack(p_len, FLAG_WRITE, data.length);
             packet = extend(packet, data);
@@ -35,6 +34,12 @@ public class Lb2StateCmdPayloadFactory {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    byte[] json(State state) throws IOException {
+        var json = mapper.writeValueAsBytes(state);
+        log.debug("Serialized state to: {}", new String(json));
+        return json;
     }
 
     private static byte[] extend(byte[] first, byte[] second) {
