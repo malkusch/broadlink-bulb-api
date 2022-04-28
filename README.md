@@ -17,7 +17,7 @@ Use `LB2LightFactory` to build `LB2Light` objects.
 
 ```java
 var factory = new LB2LightFactory();
-var light = factory.build(InetAddress.getByName("192.168.188.105"));
+var light = factory.build("192.168.188.105");
 light.turnOn();
 ```
 
