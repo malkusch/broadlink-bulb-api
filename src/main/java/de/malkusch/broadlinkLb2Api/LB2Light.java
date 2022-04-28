@@ -17,6 +17,11 @@ public final class LB2Light implements AutoCloseable {
     private final SP1Device device;
     private final String name;
 
+    /**
+     * Use LB2LightFactory to create instances of LB2Light.
+     * 
+     * @author malkusch
+     */
     LB2Light(String host, String mac, Lb2StateCmdPayloadFactory commandFactory) throws IOException {
         try {
             this.name = String.format("%s (%s)", host, mac);

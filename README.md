@@ -1,7 +1,7 @@
 # Broadlink LB2 Java API
 
 This is a Java API for the Broadlight LB2 Smart bulbs. This is an addition to [`broadlink-java-api`](https://github.com/mob41/broadlink-java-api)
-which doesn't support this device.
+which doesn't support this device. Also [`python-broadlink`](https://github.com/mjg59/python-broadlink/) was a great resource to implement this API.
 
 ## Maven
 

@@ -76,7 +76,7 @@ public class LB2LightFactory {
     public LB2Light build(InetAddress target) throws IOException {
         try (var connection = Connection.connection(target, timeout, false)) {
             var response = connection.readNext()
-                    .orElseThrow(() -> new IOException(String.format("Could not discover device {}", target)));
+                    .orElseThrow(() -> new IOException(String.format("Could not discover device %s", target)));
             return build(response);
         }
     }

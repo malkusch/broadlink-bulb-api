@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 }
 */
 
+/**
+ * See https://github.com/mjg59/python-broadlink/blob/2b70440786c7b63eb4445676db78a2acd387eaf4/broadlink/light.py#L131-L174
+ */
 @JsonInclude(NON_NULL)
 public record State(Power pwr, Integer red, Integer green, Integer blue, Integer brightness, ColorMode bulb_colormode) {
 
