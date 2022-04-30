@@ -1,6 +1,6 @@
-package de.malkusch.broadlinkLb2Api.mob41.lb2;
+package de.malkusch.broadlinkBulb.mob41.lb1;
 
-import static de.malkusch.broadlinkLb2Api.mob41.lb2.State.EMPTY;
+import static de.malkusch.broadlinkBulb.mob41.lb1.State.EMPTY;
 import static java.util.Objects.hash;
 
 import java.io.IOException;
@@ -9,15 +9,16 @@ import java.time.Duration;
 import com.github.mob41.blapi.BLDevice;
 import com.github.mob41.blapi.mac.Mac;
 
-public final class LB2Device extends BLDevice {
+public final class LB1Device extends BLDevice {
 
     private final String mac;
     private final String host;
     private final Duration timeout;
     private final Codec codec;
+    public static final short DEVICE_TYPE = -56;
 
-    public LB2Device(String host, String mac, Duration timeout, Codec codec) throws IOException {
-        super(BLDevice.DEV_SP1, BLDevice.DESC_SP1, host, reverseMac(mac));
+    public LB1Device(String host, String mac, Duration timeout, Codec codec) throws IOException {
+        super(DEVICE_TYPE, "Smart bulb LB1", host, reverseMac(mac));
 
         this.mac = mac;
         this.host = host;
@@ -85,10 +86,10 @@ public final class LB2Device extends BLDevice {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof LB2Device)) {
+        if (!(other instanceof LB1Device)) {
             return false;
         }
-        var otherDevice = (LB2Device) other;
+        var otherDevice = (LB1Device) other;
         return host.equals(otherDevice.host) && mac.equals(otherDevice.mac);
     }
 

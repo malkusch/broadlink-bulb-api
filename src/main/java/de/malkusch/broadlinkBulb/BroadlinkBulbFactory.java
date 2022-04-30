@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api;
+package de.malkusch.broadlinkBulb;
 
 import static com.github.mob41.blapi.BLDevice.DISCOVERY_DEST_PORT;
 import static com.github.mob41.blapi.BLDevice.DISCOVERY_RECEIVE_BUFFER_SIZE;
@@ -20,32 +20,34 @@ import java.util.Optional;
 import com.github.mob41.blapi.mac.Mac;
 import com.github.mob41.blapi.pkt.dis.DiscoveryPacket;
 
-import de.malkusch.broadlinkLb2Api.mob41.lb2.Codec;
-import de.malkusch.broadlinkLb2Api.mob41.lb2.LB2Device;
+import de.malkusch.broadlinkBulb.mob41.lb1.Codec;
+import de.malkusch.broadlinkBulb.mob41.lb1.LB1Device;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Discovers or builds LB2Light devices.
+ * Discovers or builds BroadlinkBulb devices.
  *
- * E.g. discover all devices: {@code
- * var factory = new LB2LightFactory(); var lights = factory.discover(); for
- * (var light : lights) { light.turnOn(); } }
+ * E.g. discover all devices: <code>
+ * var factory = new BroadlinkBulbFactory();
+ * var lights = factory.discover();
+ * for (var light : lights) {
+ *   light.turnOn();
+ * }
+ * </code>
  * 
  * @author malkusch
- *
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class LB2LightFactory {
+public final class BroadlinkBulbFactory {
 
-    private static final byte DEVICE_TYPE = -56;
     private final Duration timeout;
     private final Codec codec = new Codec();
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
 
-    public LB2LightFactory() {
+    public BroadlinkBulbFactory() {
         this(DEFAULT_TIMEOUT);
     }
 
@@ -55,14 +57,14 @@ public final class LB2LightFactory {
      * @return
      * @throws IOException
      */
-    public Collection<LB2Light> discover() throws IOException {
+    public Collection<BroadlinkBulb> discover() throws IOException {
         var addresses = NetworkInterface.networkInterfaces().flatMap(it -> it.getInterfaceAddresses().stream())
                 .map(it -> it.getAddress()) //
                 .filter(it -> it instanceof Inet4Address) //
                 .filter(it -> !it.isLoopbackAddress()) //
                 .filter(it -> !it.isLinkLocalAddress()) //
                 .toList();
-        var lights = new ArrayList<LB2Light>();
+        var lights = new ArrayList<BroadlinkBulb>();
         for (var address : addresses) {
             lights.addAll(discover(address));
         }
@@ -77,7 +79,7 @@ public final class LB2LightFactory {
      * @param source
      *            The source Ip address of a network interface
      */
-    public Collection<LB2Light> discover(String source) throws IOException {
+    public Collection<BroadlinkBulb> discover(String source) throws IOException {
         return discover(InetAddress.getByName(source));
     }
 
@@ -89,8 +91,8 @@ public final class LB2LightFactory {
      * @param source
      *            The source Ip address of a network interface
      */
-    public Collection<LB2Light> discover(InetAddress source) throws IOException {
-        var lights = new ArrayList<LB2Light>();
+    public Collection<BroadlinkBulb> discover(InetAddress source) throws IOException {
+        var lights = new ArrayList<BroadlinkBulb>();
         try (var connection = new Connection(source, InetAddress.getByName("255.255.255.255"), timeout, true)) {
 
             for (var next = connection.readNext(); next.isPresent(); next = connection.readNext()) {
@@ -109,7 +111,7 @@ public final class LB2LightFactory {
      * @param target
      *            hostname
      */
-    public LB2Light build(String target) throws IOException {
+    public BroadlinkBulb build(String target) throws IOException {
         return build(InetAddress.getByName(target));
     }
 
@@ -119,7 +121,7 @@ public final class LB2LightFactory {
      * @param target
      *            The device's ip address
      */
-    public LB2Light build(InetAddress target) throws IOException {
+    public BroadlinkBulb build(InetAddress target) throws IOException {
         try (var connection = Connection.connection(target, timeout, false)) {
             var response = connection.readNext()
                     .orElseThrow(() -> new IOException(String.format("Could not discover device %s", target)));
@@ -127,9 +129,9 @@ public final class LB2LightFactory {
         }
     }
 
-    private LB2Light build(Connection.Response response) throws IOException {
-        var device = new LB2Device(response.host, response.mac, timeout, codec);
-        return new LB2Light(device);
+    private BroadlinkBulb build(Connection.Response response) throws IOException {
+        var device = new LB1Device(response.host, response.mac, timeout, codec);
+        return new BroadlinkBulb(device);
     }
 
     @Slf4j
@@ -207,7 +209,7 @@ public final class LB2LightFactory {
                     + Integer.toHexString(deviceType));
             log.debug("Creating BLDevice instance");
 
-            if (deviceType != DEVICE_TYPE) {
+            if (deviceType != LB1Device.DEVICE_TYPE) {
                 log.info("{} is unsupported device type {}", host, deviceType);
                 return Optional.empty();
             }

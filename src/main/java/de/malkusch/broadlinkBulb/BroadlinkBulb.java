@@ -1,25 +1,25 @@
-package de.malkusch.broadlinkLb2Api;
+package de.malkusch.broadlinkBulb;
 
-import static de.malkusch.broadlinkLb2Api.mob41.lb2.State.ColorMode.RGB;
-import static de.malkusch.broadlinkLb2Api.mob41.lb2.State.ColorMode.WHITE;
-import static de.malkusch.broadlinkLb2Api.mob41.lb2.State.Power.OFF;
-import static de.malkusch.broadlinkLb2Api.mob41.lb2.State.Power.ON;
+import static de.malkusch.broadlinkBulb.mob41.lb1.State.ColorMode.RGB;
+import static de.malkusch.broadlinkBulb.mob41.lb1.State.ColorMode.WHITE;
+import static de.malkusch.broadlinkBulb.mob41.lb1.State.Power.OFF;
+import static de.malkusch.broadlinkBulb.mob41.lb1.State.Power.ON;
 
 import java.io.IOException;
 
-import de.malkusch.broadlinkLb2Api.mob41.lb2.LB2Device;
-import de.malkusch.broadlinkLb2Api.mob41.lb2.State;
+import de.malkusch.broadlinkBulb.mob41.lb1.LB1Device;
+import de.malkusch.broadlinkBulb.mob41.lb1.State;
 
-public final class LB2Light implements AutoCloseable {
+public final class BroadlinkBulb implements AutoCloseable {
 
-    private final LB2Device device;
+    private final LB1Device device;
 
     /**
-     * Use LB2LightFactory to create instances of LB2Light.
+     * Use BroadlinkBulbFactory to create instances of BroadlinkBulb.
      * 
      * @author malkusch
      */
-    LB2Light(LB2Device device) throws IOException {
+    BroadlinkBulb(LB1Device device) throws IOException {
         this.device = device;
         if (!device.auth()) {
             throw new IllegalArgumentException("Failed to authenticate");
@@ -105,10 +105,10 @@ public final class LB2Light implements AutoCloseable {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof LB2Light)) {
+        if (!(other instanceof BroadlinkBulb)) {
             return false;
         }
-        var otherLight = (LB2Light) other;
+        var otherLight = (BroadlinkBulb) other;
         return device.equals(otherLight.device);
     }
 

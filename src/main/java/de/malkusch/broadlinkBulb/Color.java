@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api;
+package de.malkusch.broadlinkBulb;
 
 import static java.util.Objects.requireNonNull;
 

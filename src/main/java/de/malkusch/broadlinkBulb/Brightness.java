@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api;
+package de.malkusch.broadlinkBulb;
 
 public record Brightness(int value) {
 

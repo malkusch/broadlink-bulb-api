@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api.mob41.lb2;
+package de.malkusch.broadlinkBulb.mob41.lb1;
 
 import static com.igormaznitsa.jbbp.io.JBBPByteOrder.LITTLE_ENDIAN;
 import static com.igormaznitsa.jbbp.io.JBBPOut.BeginBin;

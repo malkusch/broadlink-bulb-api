@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api.mob41.lb2;
+package de.malkusch.broadlinkBulb.mob41.lb1;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mob41.blapi.BLDevice;
 import com.github.mob41.blapi.pkt.BytePayload;
 
-import de.malkusch.broadlinkLb2Api.mob41.Checksum;
+import de.malkusch.broadlinkBulb.mob41.Checksum;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

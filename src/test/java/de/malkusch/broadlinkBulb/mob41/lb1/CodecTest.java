@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api.mob41.lb2;
+package de.malkusch.broadlinkBulb.mob41.lb1;
 
 import java.util.function.Consumer;
 
@@ -7,8 +7,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import de.malkusch.broadlinkLb2Api.mob41.lb2.State.ColorMode;
-import de.malkusch.broadlinkLb2Api.mob41.lb2.State.Power;
+import de.malkusch.broadlinkBulb.mob41.lb1.State.ColorMode;
+import de.malkusch.broadlinkBulb.mob41.lb1.State.Power;
 
 public class CodecTest {
 

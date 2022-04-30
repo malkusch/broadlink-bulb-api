@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api;
+package de.malkusch.broadlinkBulb;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,13 +10,13 @@ import java.time.Duration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class LB2LightIT {
+public class BroadlinkBulbIT {
 
-    private static LB2Light light;
+    private static BroadlinkBulb light;
 
     @BeforeAll
     private static void discoverLight() throws Exception {
-        var factory = new LB2LightFactory(Duration.ofMillis(300));
+        var factory = new BroadlinkBulbFactory(Duration.ofMillis(300));
         var lights = factory.discover();
         light = lights.stream().findFirst().orElse(null);
 

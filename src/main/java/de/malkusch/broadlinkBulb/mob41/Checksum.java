@@ -1,4 +1,4 @@
-package de.malkusch.broadlinkLb2Api.mob41;
+package de.malkusch.broadlinkBulb.mob41;
 
 public final class Checksum {
 
