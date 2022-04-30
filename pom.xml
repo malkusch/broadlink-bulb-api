@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.malkusch</groupId>
 	<artifactId>broadlink-bulb-api</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.2.0</version>
 	<properties>
 		<maven.compiler.source>16</maven.compiler.source>
 		<maven.compiler.target>16</maven.compiler.target>
@@ -10,7 +10,7 @@
 	</properties>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/malkusch/broadlink-bulb-api.git</connection>
-		<tag>HEAD</tag>
+		<tag>0.2.0</tag>
 	</scm>
 	<dependencies>
 		<dependency>
