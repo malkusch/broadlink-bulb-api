@@ -1,28 +1,73 @@
 package de.malkusch.broadlinkLb2Api.mob41.lb2;
 
+import static de.malkusch.broadlinkLb2Api.mob41.lb2.State.EMPTY;
+import static java.util.Objects.hash;
+
 import java.io.IOException;
+import java.time.Duration;
 
 import com.github.mob41.blapi.BLDevice;
 import com.github.mob41.blapi.mac.Mac;
 
 public final class LB2Device extends BLDevice {
 
-    private final Lb2StateCmdPayloadFactory commandFactory;
-
     private final String mac;
     private final String host;
+    private final Duration timeout;
+    private final Codec codec;
 
-    public LB2Device(String host, String mac, Lb2StateCmdPayloadFactory commandFactory) throws IOException {
+    public LB2Device(String host, String mac, Duration timeout, Codec codec) throws IOException {
         super(BLDevice.DEV_SP1, BLDevice.DESC_SP1, host, reverseMac(mac));
 
         this.mac = mac;
         this.host = host;
-        this.commandFactory = commandFactory;
+        this.timeout = timeout;
+        this.codec = codec;
     }
 
     public void changeState(State state) throws IOException {
-        var cmd = commandFactory.writeCommand(state);
-        sendCmdPkt(cmd);
+        var changed = send(state, FLAG_WRITE).toMap();
+
+        for (var entry : state.toMap().entrySet()) {
+            var key = entry.getKey();
+            var expected = entry.getValue();
+            if (expected == null) {
+                continue;
+            }
+            var actual = changed.get(key);
+
+            if (!expected.equals(actual)) {
+                throw new IOException(
+                        String.format("%s failed changing %s to %s, was %s", this, key, expected, actual));
+            }
+        }
+    }
+
+    public State readState() throws IOException {
+        return send(EMPTY, FLAG_READ);
+    }
+
+    private static final int FLAG_WRITE = 2;
+    private static final int FLAG_READ = 1;
+
+    private State send(State state, int flag) throws IOException {
+        var cmd = codec.encode(state, flag);
+        var response = sendCmdPkt((int) timeout.toMillis(), cmd);
+        var encrypted = response.getData();
+
+        int err = encrypted[0x22] | (encrypted[0x23] << 8);
+        if (err != 0) {
+            throw new IOException(
+                    String.format("%s received returned err: %s/%d", this, Integer.toHexString(err), err));
+        }
+
+        byte[] decrypted;
+        try {
+            decrypted = decryptFromDeviceMessage(encrypted);
+        } catch (Exception e) {
+            throw new IOException(String.format("%s can't decrypt response", this), e);
+        }
+        return codec.decode(decrypted);
     }
 
     public String mac() {
@@ -31,6 +76,25 @@ public final class LB2Device extends BLDevice {
 
     public String host() {
         return host;
+    }
+
+    @Override
+    public int hashCode() {
+        return hash(mac, host);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof LB2Device)) {
+            return false;
+        }
+        var otherDevice = (LB2Device) other;
+        return host.equals(otherDevice.host) && mac.equals(otherDevice.mac);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%s]", host, mac);
     }
 
     private static Mac reverseMac(String mac) {

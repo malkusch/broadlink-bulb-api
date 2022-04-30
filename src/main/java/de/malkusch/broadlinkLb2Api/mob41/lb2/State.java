@@ -2,11 +2,13 @@ package de.malkusch.broadlinkLb2Api.mob41.lb2;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import de.malkusch.broadlinkLb2Api.mob41.lb2.State.ColorMode;
-import de.malkusch.broadlinkLb2Api.mob41.lb2.State.Power;
 import lombok.RequiredArgsConstructor;
 
 /*public record State(int pwr, int red, int blue, int green, int brightness, int colortemp, int hue, int saturation,
@@ -20,9 +22,17 @@ import lombok.RequiredArgsConstructor;
  * https://github.com/mjg59/python-broadlink/blob/2b70440786c7b63eb4445676db78a2acd387eaf4/broadlink/light.py#L131-L174
  */
 @JsonInclude(NON_NULL)
-public record State(Power pwr, Integer red, Integer green, Integer blue, Integer brightness, ColorMode bulb_colormode) {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public final class State {
 
-    public static final State EMPTY = new State(null, null, null, null, null, null);
+    public Power pwr;
+    public Integer red;
+    public Integer green;
+    public Integer blue;
+    public Integer brightness;
+    public ColorMode bulb_colormode;
+
+    public static final State EMPTY = new State();
 
     @RequiredArgsConstructor
     public static enum Power {
@@ -38,5 +48,16 @@ public record State(Power pwr, Integer red, Integer green, Integer blue, Integer
 
         @JsonValue
         private final int value;
+    }
+
+    Map<String, Object> toMap() {
+        var map = new HashMap<String, Object>();
+        map.put("pwr", pwr);
+        map.put("red", red);
+        map.put("green", green);
+        map.put("blue", blue);
+        map.put("brightness", brightness);
+        map.put("bulb_colormode", bulb_colormode);
+        return map;
     }
 }
