@@ -8,10 +8,18 @@
 		<maven.compiler.target>16</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
+	<parent>
+		<groupId>de.malkusch.parent</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>3.0.1</version>
+	</parent>
+	<url>https://github.com/malkusch/${project.artifactId}</url>
 	<scm>
-		<connection>scm:git:ssh://git@github.com/malkusch/broadlink-bulb-api.git</connection>
-		<tag>HEAD</tag>
+		<connection>scm:git:git://github.com/malkusch/${project.artifactId}.git</connection>
+		<developerConnection>scm:git:git@github.com:malkusch/${project.artifactId}.git</developerConnection>
 	</scm>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -69,18 +77,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>3.0.0-M7</version>
-				<configuration>
-					<goals>install</goals>
-					<tagNameFormat>@{project.version}</tagNameFormat>
-				</configuration>
-			</plugin>
-
-		</plugins>
-	</build>
 </project>
