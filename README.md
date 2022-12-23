@@ -5,7 +5,14 @@ which doesn't support this device. Also [`python-broadlink`](https://github.com/
 
 ## Maven
 
-For now use [JitPack](https://jitpack.io/#malkusch/broadlink-bulb-api).
+This package is available in Maven central:
+```xml
+<dependency>
+    <groupId>de.malkusch</groupId>
+    <artifactId>broadlink-bulb-api</artifactId>
+    <version>0.2.2</version>
+</dependency>
+```
 
 ## Usage
 
