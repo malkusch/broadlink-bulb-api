@@ -15,7 +15,7 @@ public class BroadlinkBulbIT {
     private static BroadlinkBulb light;
 
     @BeforeAll
-    private static void discoverLight() throws Exception {
+    static void discoverLight() throws Exception {
         var factory = new BroadlinkBulbFactory(Duration.ofMillis(300));
         var lights = factory.discover();
         light = lights.stream().findFirst().orElse(null);
