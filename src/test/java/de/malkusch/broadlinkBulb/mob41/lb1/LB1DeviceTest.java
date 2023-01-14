@@ -1,23 +1,16 @@
 package de.malkusch.broadlinkBulb.mob41.lb1;
 
-import static java.util.Arrays.asList;
-import static java.util.Arrays.copyOf;
-import static java.util.Collections.synchronizedList;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static de.malkusch.broadlinkBulb.test.UdpServer.AUTH_RESPONSE;
+import static de.malkusch.broadlinkBulb.test.UdpServer.EMPTY_RESPONSE;
+import static de.malkusch.broadlinkBulb.test.UdpServer.server;
+import static java.util.Arrays.copyOfRange;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ExecutorService;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,84 +37,28 @@ public class LB1DeviceTest {
 
     @Test
     public void authShouldSucceed() throws Exception {
-        var response = new byte[] { //
-                90, -91, -86, 85, 90, -91, -86, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                -73, -40, 0, 0, 42, 39, -23, 3, 33, -57, -62, -7, 80, -82, 11, -20, 0, 0, 0, 0, 80, -58, 0, 0, 9, -97,
-                -22, 25, -49, 16, 76, 122, -42, -106, -83, 70, 65, 95, 89, 105, 97, -62, 28, -38, -63, 103, 57, 97, 127,
-                -40, 56, -93, -60, -81, 85, 59 };
-
-        try (var server = server(response)) {
-
+        try (var server = server(AUTH_RESPONSE)) {
             var auth = device.auth();
 
+            var packet = server.nextPacket();
+            assertEquals(152, packet.length);
+            assertArrayEquals(new byte[] { 90, -91, -86, 85, 90, -91, -86, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, copyOfRange(packet, 0, 32));
+            assertArrayEquals(new byte[] { -62, -7, 80, -82, 11, -20, 0, 0, 0, 0, -95, -61, 0, 0, 69, 52, 82, -25, -7,
+                    46, -38, -107, -125, 68, -109, 8, 53, -17, -102, 109, -5, 105, 45, -61, 112, -71, 4, 67, -84, 92,
+                    -42, 63, -69, 83, -83, -6, 8, -127, 76, -89, -8, -49, 65, 113, 0, 50, -114, 87, 12, 59, -122, -55,
+                    77, 5, 112, -124, 73, -93, -119, -30, -102, -31, 4, 84, 54, -96, 91, -35, -36, 2, -63, 97, -81, 19,
+                    37, -24, 126, 25, -80, -9, -47, -50, 6, -115, -27, 27, 97, -111, 86, -121, 109, 51, -116, -1, 59,
+                    -103, 30, 64, -51, -79 }, copyOfRange(packet, 152 - 110, 152));
             assertTrue(auth);
         }
     }
 
     @Test
     public void authShouldFail() throws Exception {
-        var response = new byte[] { };
-
-        try (var server = server(response)) {
-
+        try (var server = server(EMPTY_RESPONSE)) {
             var auth = device.auth();
-
             assertFalse(auth);
-        }
-    }
-
-    private static UdpServer server(byte[] response) throws SocketException {
-        return new UdpServer(80, 255, asList(response));
-    }
-
-    private static class UdpServer implements AutoCloseable {
-
-        private final DatagramSocket socket;
-        private final int bufferSize;
-        private final List<byte[]> received = synchronizedList(new ArrayList<>());
-        private final Queue<byte[]> responses;
-        private final ExecutorService executor = newSingleThreadExecutor();
-
-        public UdpServer(int port, int bufferSize, List<byte[]> responses) throws SocketException {
-            socket = new DatagramSocket(port);
-            this.bufferSize = bufferSize;
-            this.responses = new LinkedList<>(responses);
-            executor.execute(this::start);
-        }
-
-        private void start() {
-            final byte[] buffer = new byte[bufferSize];
-            while (!socket.isClosed()) {
-                var packet = new DatagramPacket(buffer, buffer.length);
-                try {
-                    socket.receive(packet);
-                    var data = copyOf(packet.getData(), packet.getLength());
-                    received.add(data);
-
-                    var response = responses.poll();
-                    if (response != null) {
-                        socket.send(
-                                new DatagramPacket(response, response.length, packet.getAddress(), packet.getPort()));
-                    }
-
-                } catch (IOException e) {
-                    if (!socket.isClosed()) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-            }
-        }
-
-        @Override
-        public void close() throws Exception {
-            if (!socket.isClosed()) {
-                socket.close();
-            }
-            if (!executor.isShutdown()) {
-                executor.shutdown();
-                executor.awaitTermination(3, SECONDS);
-            }
         }
     }
 }
