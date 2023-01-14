@@ -10,7 +10,7 @@ This package is available in Maven central:
 <dependency>
     <groupId>de.malkusch</groupId>
     <artifactId>broadlink-bulb-api</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
