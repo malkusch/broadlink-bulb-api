@@ -8,33 +8,30 @@ public record Color(Red red, Green green, Blue blue) {
         this(new Red(red), new Green(green), new Blue(blue));
     }
 
-    public Color(Red red, Green green, Blue blue) {
-        this.red = requireNonNull(red);
-        this.green = requireNonNull(green);
-        this.blue = requireNonNull(blue);
+    public Color {
+        requireNonNull(red);
+        requireNonNull(green);
+        requireNonNull(blue);
     }
 
     public static record Red(int value) {
 
-        public Red(int value) {
+        public Red {
             assertValidColorValue(value);
-            this.value = value;
         }
     }
 
     public static record Green(int value) {
 
-        public Green(int value) {
+        public Green {
             assertValidColorValue(value);
-            this.value = value;
         }
     }
 
     public static record Blue(int value) {
 
-        public Blue(int value) {
+        public Blue {
             assertValidColorValue(value);
-            this.value = value;
         }
     }
 
