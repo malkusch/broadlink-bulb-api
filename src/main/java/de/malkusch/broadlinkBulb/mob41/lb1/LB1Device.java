@@ -56,6 +56,9 @@ public final class LB1Device extends BLDevice {
         var response = sendCmdPkt((int) timeout.toMillis(), cmd);
         var encrypted = response.getData();
 
+        if (0x22 >= encrypted.length) {
+            throw new IOException("Received to few data " + encrypted.length + " bytes");
+        }
         int err = encrypted[0x22] | (encrypted[0x23] << 8);
         if (err != 0) {
             throw new IOException(
