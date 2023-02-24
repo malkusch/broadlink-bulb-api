@@ -1,9 +1,13 @@
 name: Build
-on: [push, workflow_call]
+on:
+  push:
+  workflow_call:
+    outputs:
+      JDK_VERSION:
+        value: ${{ jobs.build.outputs.JDK_VERSION }}
 
 jobs:
   build:
     uses: malkusch/github/.github/workflows/maven-build.yml@master
     with:
-      JDK_VERSION: 16
       ALLOW_PRIVILEGED_PORT: 79
