@@ -1,15 +1,13 @@
 package de.malkusch.broadlinkBulb.mob41.lb1;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 /*public record State(int pwr, int red, int blue, int green, int brightness, int colortemp, int hue, int saturation,
         int transitionduration, int maxworktime, int bulb_colormode, String bulb_scenes, String bulb_scene,
@@ -34,17 +32,23 @@ public final class State {
 
     public static final State EMPTY = new State();
 
-    @RequiredArgsConstructor
-    public static enum Power {
+    public enum Power {
         ON(1), OFF(0);
 
         @JsonValue
         private final int value;
+
+        Power(int value) {
+            this.value = value;
+        }
     }
 
-    @RequiredArgsConstructor
-    public static enum ColorMode {
+    public enum ColorMode {
         RGB(0), WHITE(1), SCENE(2);
+
+        ColorMode(int value) {
+            this.value = value;
+        }
 
         @JsonValue
         private final int value;

@@ -1,29 +1,21 @@
 package de.malkusch.broadlinkBulb;
 
-import static com.github.mob41.blapi.BLDevice.DISCOVERY_DEST_PORT;
-import static com.github.mob41.blapi.BLDevice.DISCOVERY_RECEIVE_BUFFER_SIZE;
-import static com.github.mob41.blapi.BLDevice.reverseBytes;
-import static com.github.mob41.blapi.BLDevice.subbytes;
+import com.github.mob41.blapi.mac.Mac;
+import com.github.mob41.blapi.pkt.dis.DiscoveryPacket;
+import de.malkusch.broadlinkBulb.mob41.lb1.Codec;
+import de.malkusch.broadlinkBulb.mob41.lb1.LB1Device;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.github.mob41.blapi.mac.Mac;
-import com.github.mob41.blapi.pkt.dis.DiscoveryPacket;
-
-import de.malkusch.broadlinkBulb.mob41.lb1.Codec;
-import de.malkusch.broadlinkBulb.mob41.lb1.LB1Device;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static com.github.mob41.blapi.BLDevice.*;
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.INFO;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Discovers or builds BroadlinkBulb devices.
@@ -35,17 +27,20 @@ import lombok.extern.slf4j.Slf4j;
  *   light.turnOn();
  * }
  * </code>
- * 
+ *
  * @author malkusch
  */
-@RequiredArgsConstructor
-@Slf4j
 public final class BroadlinkBulbFactory {
 
+    private static final System.Logger log = System.getLogger(BroadlinkBulbFactory.class.getName());
     private final Duration timeout;
     private final Codec codec = new Codec();
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
+
+    public BroadlinkBulbFactory(Duration timeout) {
+        this.timeout = requireNonNull(timeout);
+    }
 
     public BroadlinkBulbFactory() {
         this(DEFAULT_TIMEOUT);
@@ -53,7 +48,7 @@ public final class BroadlinkBulbFactory {
 
     /**
      * Discovers all devices in the LAN.
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -73,9 +68,9 @@ public final class BroadlinkBulbFactory {
 
     /**
      * Discovers all devices in the LAN.
-     * 
+     *
      * This discovery is limited to one network device.
-     * 
+     *
      * @param source
      *            The source Ip address of a network interface
      */
@@ -85,9 +80,9 @@ public final class BroadlinkBulbFactory {
 
     /**
      * Discovers all devices in the LAN.
-     * 
+     *
      * This discovery is limited to one network device.
-     * 
+     *
      * @param source
      *            The source Ip address of a network interface
      */
@@ -98,7 +93,7 @@ public final class BroadlinkBulbFactory {
             for (var next = connection.readNext(); next.isPresent(); next = connection.readNext()) {
                 var response = next.get();
                 var light = build(response);
-                log.info("Discovered {}", light);
+                log.log(INFO, "Discovered {0}", light);
                 lights.add(light);
             }
         }
@@ -107,7 +102,7 @@ public final class BroadlinkBulbFactory {
 
     /**
      * Connect to a known device
-     * 
+     *
      * @param target
      *            hostname
      */
@@ -117,7 +112,7 @@ public final class BroadlinkBulbFactory {
 
     /**
      * Connect to a known device
-     * 
+     *
      * @param target
      *            The device's ip address
      */
@@ -134,8 +129,9 @@ public final class BroadlinkBulbFactory {
         return new BroadlinkBulb(device);
     }
 
-    @Slf4j
     private static final class Connection implements AutoCloseable {
+
+        private static final System.Logger log = System.getLogger(Connection.class.getName());
         private final InetAddress sourceIpAddr;
         private final int sourcePort = 0;
         private final DatagramSocket socket;
@@ -167,7 +163,7 @@ public final class BroadlinkBulbFactory {
                 sock.setBroadcast(true);
                 sock.setReuseAddress(true);
             }
-            log.debug("Discover from {} at {}", sourceIpAddr, target);
+            log.log(DEBUG, "Discover from {0} at {1}", sourceIpAddr, target);
 
             DiscoveryPacket dpkt = new DiscoveryPacket(sourceIpAddr, sourcePort);
             byte[] sendBytes = dpkt.getData();
@@ -185,7 +181,7 @@ public final class BroadlinkBulbFactory {
                 return Optional.of(packet);
 
             } catch (SocketTimeoutException e) {
-                log.debug("Stop discovery at {}", sourceIpAddr);
+                log.log(DEBUG, "Stop discovery at {0}", sourceIpAddr);
                 return Optional.empty();
             }
         }
@@ -205,12 +201,12 @@ public final class BroadlinkBulbFactory {
             Mac mac = new Mac(reverseBytes(subbytes(readBuffer, 0x3a, 0x40)));
             short deviceType = (short) (readBuffer[0x34] | readBuffer[0x35] << 8);
 
-            log.debug("Info: host=" + host + " mac=" + mac.getMacString() + " deviceType=0x"
+            log.log(DEBUG, "Info: host=" + host + " mac=" + mac.getMacString() + " deviceType=0x"
                     + Integer.toHexString(deviceType));
-            log.debug("Creating BLDevice instance");
+            log.log(DEBUG, "Creating BLDevice instance");
 
             if (deviceType != LB1Device.DEVICE_TYPE) {
-                log.info("{} is unsupported device type {}", host, deviceType);
+                log.log(DEBUG, "{0} is unsupported device type {1}", host, deviceType);
                 return Optional.empty();
             }
 

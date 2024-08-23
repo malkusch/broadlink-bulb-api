@@ -1,17 +1,17 @@
 package de.malkusch.broadlinkBulb.mob41.lb1;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mob41.blapi.BLDevice;
 import com.github.mob41.blapi.pkt.BytePayload;
-
 import de.malkusch.broadlinkBulb.mob41.Checksum;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+import java.io.IOException;
+
+import static java.lang.System.Logger.Level.DEBUG;
+
 public final class Codec {
 
+    private static final System.Logger log = System.getLogger(Codec.class.getName());
     private final ObjectMapper mapper = new ObjectMapper();
     private final Unpacker unpacker = new Unpacker();
     private final Packer packer = new Packer();
@@ -19,7 +19,7 @@ public final class Codec {
     public State decode(byte[] response) throws IOException {
         var js_len = (int) unpacker.unpack_js_len(response);
         var json_data = BLDevice.subbytes(response, 14, 14 + js_len);
-        log.debug("decoded: {}", new String(json_data));
+        log.log(DEBUG, "decoded: {0}", new String(json_data));
         return mapper.readValue(json_data, State.class);
     }
 
@@ -42,7 +42,7 @@ public final class Codec {
 
     byte[] json(State state) throws IOException {
         var json = mapper.writeValueAsBytes(state);
-        log.debug("Serialized state to: {}", new String(json));
+        log.log(DEBUG, "Serialized state to: {0}", new String(json));
         return json;
     }
 
