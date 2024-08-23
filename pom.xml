@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>de.malkusch.parent</groupId>
 		<artifactId>oss-parent</artifactId>
-		<version>3.0.6</version>
+		<version>3.0.7</version>
 	</parent>
 	<url>https://github.com/malkusch/${project.artifactId}</url>
 	<scm>
@@ -42,7 +42,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>5.11.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -58,24 +57,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.4.0</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.4.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
