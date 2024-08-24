@@ -11,3 +11,4 @@ jobs:
     uses: malkusch/github/.github/workflows/maven-build.yml@master
     with:
       ALLOW_PRIVILEGED_PORT: 79
+      INTEGRATION_TESTS_ENABLED: false
