@@ -14,21 +14,21 @@ public record Color(Red red, Green green, Blue blue) {
         requireNonNull(blue);
     }
 
-    public static record Red(int value) {
+    public record Red(int value) {
 
         public Red {
             assertValidColorValue(value);
         }
     }
 
-    public static record Green(int value) {
+    public record Green(int value) {
 
         public Green {
             assertValidColorValue(value);
         }
     }
 
-    public static record Blue(int value) {
+    public record Blue(int value) {
 
         public Blue {
             assertValidColorValue(value);

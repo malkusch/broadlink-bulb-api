@@ -39,8 +39,14 @@ public class BroadlinkBulbIT {
         assertTrue(light.isColor());
         assertEquals(color, light.color());
 
-        var brightness = new Brightness(100);
+        var brightness = new Brightness(10);
         light.dimm(brightness);
         assertEquals(brightness, light.brightness());
+
+        light.shineWhite();
+        assertTrue(light.isWhite());
+
+        light.dimm(Brightness.FULL);
+        assertEquals(Brightness.FULL, light.brightness());
     }
 }
