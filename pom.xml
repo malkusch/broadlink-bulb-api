@@ -4,8 +4,7 @@
 	<artifactId>broadlink-bulb-api</artifactId>
 	<version>1.0.8-SNAPSHOT</version>
 	<properties>
-		<maven.compiler.source>16</maven.compiler.source>
-		<maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<parent>
@@ -19,11 +18,11 @@
 		<developerConnection>scm:git:git@github.com:malkusch/${project.artifactId}.git</developerConnection>
 	</scm>
 	<dependencies>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.20.1</version>
-		</dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>3.0.2</version>
+        </dependency>
 		<dependency>
 			<groupId>com.github.mob41.blapi</groupId>
 			<artifactId>broadlink-java-api</artifactId>

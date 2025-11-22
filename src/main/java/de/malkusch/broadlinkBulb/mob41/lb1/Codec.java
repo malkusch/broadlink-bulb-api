@@ -1,9 +1,9 @@
 package de.malkusch.broadlinkBulb.mob41.lb1;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mob41.blapi.BLDevice;
 import com.github.mob41.blapi.pkt.BytePayload;
 import de.malkusch.broadlinkBulb.mob41.Checksum;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
