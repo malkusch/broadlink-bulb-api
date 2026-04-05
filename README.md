@@ -8,9 +8,9 @@ which doesn't support this device. Also [`python-broadlink`](https://github.com/
 This package is available in Maven central:
 ```xml maven
 <dependency>
-    <groupId>de.malkusch</groupId>
-    <artifactId>broadlink-bulb-api</artifactId>
-  <version>1.0.8</version>
+  <groupId>de.malkusch</groupId>
+  <artifactId>broadlink-bulb-api</artifactId>
+  <version>1.0.9</version>
 </dependency>
 ```
 
